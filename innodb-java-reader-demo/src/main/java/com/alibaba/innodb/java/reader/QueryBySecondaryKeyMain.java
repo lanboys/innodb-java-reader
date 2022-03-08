@@ -3,13 +3,14 @@
  */
 package com.alibaba.innodb.java.reader;
 
-import com.google.common.collect.ImmutableList;
-
 import com.alibaba.innodb.java.reader.comparator.ComparisonOperator;
 import com.alibaba.innodb.java.reader.page.index.GenericRecord;
+import com.google.common.collect.ImmutableList;
 
 import java.util.Arrays;
 import java.util.Iterator;
+
+import static com.alibaba.innodb.java.reader.TestDataHolder.CREATETABLESQL;
 
 /**
  * @author xu.zx
@@ -25,23 +26,27 @@ public class QueryBySecondaryKeyMain {
         + "KEY `key_a` (`a`))\n"
         + "ENGINE=InnoDB;";
     String ibdFilePath = "/usr/local/mysql/data/test/t.ibd";
-    try (TableReader reader = new TableReaderImpl(ibdFilePath, createTableSql)) {
+    try (TableReader reader = new TableReaderImpl(TestDataHolder.IBD_PATH, CREATETABLESQL)) {
+
       reader.open();
 
+      int count = 0;
       // ~~~ query by sk
-      Iterator<GenericRecord> iterator = reader.getRecordIteratorBySk("key_a",
-          ImmutableList.of(2L), ComparisonOperator.GTE,
-          ImmutableList.of(9L), ComparisonOperator.LT);
+      Iterator<GenericRecord> iterator = reader.getRecordIteratorBySk("age",
+          ImmutableList.of(12), ComparisonOperator.GTE,
+          ImmutableList.of(13), ComparisonOperator.LTE);
       while (iterator.hasNext()) {
         GenericRecord record = iterator.next();
         Object[] values = record.getValues();
         System.out.println(Arrays.asList(values));
+        count++;
       }
+        System.out.println(count);
 
       // ~~~ query by sk, point query
-      iterator = reader.getRecordIteratorBySk("key_a",
-          ImmutableList.of(6L), ComparisonOperator.GTE,
-          ImmutableList.of(6L), ComparisonOperator.LTE);
+      iterator = reader.getRecordIteratorBySk("age",
+          ImmutableList.of(16L), ComparisonOperator.GTE,
+          ImmutableList.of(26L), ComparisonOperator.LTE);
       while (iterator.hasNext()) {
         GenericRecord record = iterator.next();
         Object[] values = record.getValues();

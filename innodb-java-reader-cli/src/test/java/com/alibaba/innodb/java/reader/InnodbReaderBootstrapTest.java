@@ -269,8 +269,7 @@ public class InnodbReaderBootstrapTest {
   public void testRangeQueryByPrimaryKeyNegative() {
     String[] args = {"-ibd-file-path", sourceIbdFilePath, "-create-table-sql-file-path", createTableSqlPath,
         "-c", "range-query-by-pk", "-args", "700,800"};
-    bool valid = InnodbReaderBootstrap.main(args);
-    assertThat(valid, is(false));
+    InnodbReaderBootstrap.main(args);
   }
 
   @Test

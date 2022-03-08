@@ -22,15 +22,16 @@ public class QueryByPageNumberMain {
         + "KEY `key_a` (`a`))\n"
         + "ENGINE=InnoDB;";
     String ibdFilePath = "/usr/local/mysql/data/test/t.ibd";
-    try (TableReader reader = new TableReaderImpl(ibdFilePath, createTableSql)) {
+    try (TableReader reader = new TableReaderImpl(TestDataHolder.IBD_PATH, TestDataHolder.CREATETABLESQL)) {
       reader.open();
-      List<GenericRecord> recordList = reader.queryByPageNumber(3);
+      // 只能查询聚簇索引
+      List<GenericRecord> recordList = reader.queryByPageNumber(4);
       for (GenericRecord record : recordList) {
         Object[] values = record.getValues();
         System.out.println(Arrays.asList(values));
         assert record.getPrimaryKey() == record.get("id");
-        System.out.println("id=" + record.get("id"));
-        System.out.println("a=" + record.get("a"));
+        //System.out.println("id=" + record.get("id"));
+        //System.out.println("a=" + record.get("a"));
         if (!record.isLeafRecord()) {
           System.out.println(record.getChildPageNumber());
         }

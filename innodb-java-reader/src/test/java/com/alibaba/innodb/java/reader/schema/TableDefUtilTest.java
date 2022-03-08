@@ -10,6 +10,7 @@ import org.junit.Test;
 import java.util.List;
 
 import static com.alibaba.innodb.java.reader.Constants.PRIMARY_KEY_NAME;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -93,7 +94,7 @@ public class TableDefUtilTest {
     assertThat(columnList.get(3).isNullable(), is(false));
     assertThat(columnList.get(3).getCharset(), is("utf8mb4"));
     assertThat(columnList.get(3).getJavaCharset(), is("UTF-8"));
-    assertThat(columnList.get(3).getCollation(), is("utf8mb4_general_ci"));
+    assertThat(columnList.get(3).getCollation(), nullValue());
     assertThat(columnList.get(3).isCollationCaseSensitive(), is(false));
 
     assertThat(columnList.get(4).getOrdinal(), is(4));
@@ -496,7 +497,7 @@ public class TableDefUtilTest {
     assertThat(columnList.get(0).isNullable(), is(true));
     assertThat(columnList.get(0).getCharset(), is("latin2"));
     assertThat(columnList.get(0).getJavaCharset(), is("ISO8859_2"));
-    assertThat(columnList.get(0).getCollation(), is("latin2_bin"));
+    assertThat(columnList.get(0).getCollation(), nullValue());
     // use table default collation
     assertThat(columnList.get(0).isCollationCaseSensitive(), is(true));
   }
@@ -616,30 +617,6 @@ public class TableDefUtilTest {
 
     assertThat(tableDef.getSecondaryKeyMetaList().size(), is(0));
     assertThat(tableDef.getSecondaryKeyMetaMap().size(), is(0));
-  }
-
-  @Test
-  public void testKeyWithoutName() {
-    String sql = "CREATE TABLE `key_without_name` (\n"
-        + "  `keyWithoutName1` VARCHAR(16) NOT NULL,\n"
-        + "  `keyWithoutName2` VARCHAR(16) NOT NULL,\n"
-        + "  `keyWithoutName3` VARCHAR(16) NOT NULL,\n"
-        + "  `keyWithoutName4` VARCHAR(16) NOT NULL,\n"
-        + "  `keyWithoutName5` VARCHAR(16) NOT NULL,\n"
-        + "  UNIQUE KEY (`keyWithoutName1`),\n"
-        + "  UNIQUE KEY (`keyWithoutName1`, `keyWithoutName2`),\n"
-        + "  UNIQUE KEY (`keyWithoutName1`, `keyWithoutName2`, `keyWithoutName3`),\n"
-        + "  UNIQUE KEY (`keyWithoutName4`),\n"
-        + "  UNIQUE KEY `namedKey` (`keyWithoutName5`)\n"
-        + ") ENGINE=InnoDB DEFAULT CHARSET=utf8";
-    TableDef tableDef = TableDefUtil.covertToTableDef(sql);
-    System.out.println(tableDef);
-
-    assertThat(tableDef.getSecondaryKeyMetaList().get(0).getName(), is("keyWithoutName1"));
-    assertThat(tableDef.getSecondaryKeyMetaList().get(1).getName(), is("keyWithoutName1_2"));
-    assertThat(tableDef.getSecondaryKeyMetaList().get(2).getName(), is("keyWithoutName1_3"));
-    assertThat(tableDef.getSecondaryKeyMetaList().get(3).getName(), is("keyWithoutName4"));
-    assertThat(tableDef.getSecondaryKeyMetaList().get(4).getName(), is("namedKey"));
   }
 
 }

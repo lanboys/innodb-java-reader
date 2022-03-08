@@ -17,7 +17,7 @@ public class GetPageFillingRateMain {
         + "KEY `key_a` (`a`))\n"
         + "ENGINE=InnoDB;";
     String ibdFilePath = "/usr/local/mysql/data/test/t.ibd";
-    try (TableReader reader = new TableReaderImpl(ibdFilePath, createTableSql)) {
+    try (TableReader reader = new TableReaderImpl(TestDataHolder.IBD_PATH, TestDataHolder.CREATETABLESQL)) {
       reader.open();
       System.out.println(reader.getIndexPageFillingRate(3));
       System.out.println(reader.getAllIndexPageFillingRate());

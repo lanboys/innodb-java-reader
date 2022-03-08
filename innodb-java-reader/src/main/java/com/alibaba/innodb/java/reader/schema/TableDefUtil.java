@@ -16,10 +16,8 @@ import net.sf.jsqlparser.statement.create.table.Index;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
@@ -87,12 +85,7 @@ public class TableDefUtil {
         indexOfCollate = tableOptions.indexOf("collate");
       }
       if (indexOfCollate > 0) {
-        String collateNextOne = (String) tableOptions.get(indexOfCollate + 1);
-        if (!"=".equals(collateNextOne)) {
-          tableDef.setCollation(collateNextOne);
-        } else {
-          tableDef.setCollation((String) tableOptions.get(indexOfCollate + 2));
-        }
+        tableDef.setCollation((String) tableOptions.get(indexOfCollate + 1));
       }
     }
   }
@@ -100,7 +93,6 @@ public class TableDefUtil {
   private static void handleIndex(CreateTable stmt, TableDef tableDef) {
     List<Index> indices = stmt.getIndexes();
     if (CollectionUtils.isNotEmpty(indices)) {
-      Map<String, Integer> indexesSoFar = new HashMap<>();
       for (Index index : indices) {
         if (KeyMeta.Type.isValid(index.getType())) {
           List<String> colNames = getColumnNames(index);
@@ -109,15 +101,8 @@ public class TableDefUtil {
             tableDef.setPrimaryKeyColumns(colNames);
           } else if (KeyMeta.Type.isValidSk(index.getType())) {
             // handle sk
-            String indexName = index.getName() == null ? colNames.get(0) : index.getName();
-            if (indexesSoFar.containsKey(indexName)) {
-              indexesSoFar.put(indexName, indexesSoFar.get(indexName) + 1);
-              indexName = indexName + '_' + indexesSoFar.get(indexName);
-            } else {
-              indexesSoFar.put(indexName, 1);
-            }
             tableDef.addSecondaryKeyColumns(index.getType().toUpperCase(),
-                indexName, colNames);
+                index.getName(), colNames);
           } else {
             // handle fulltext and foreign key
             tableDef.addSecondaryKeyColumns(index.getType().toUpperCase(),

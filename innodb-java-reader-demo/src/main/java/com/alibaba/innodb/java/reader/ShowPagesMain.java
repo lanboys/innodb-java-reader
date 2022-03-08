@@ -28,7 +28,8 @@ public class ShowPagesMain {
         .addColumn(new Column().setName("a").setType("bigint(20)").setNullable(false))
         .addColumn(new Column().setName("b").setType("varchar(64)").setNullable(false));
     String ibdFilePath = "/usr/local/mysql/data/test/t.ibd";
-    try (TableReader reader = new TableReaderImpl(ibdFilePath, tableDef)) {
+
+    try (TableReader reader = new TableReaderImpl(TestDataHolder.IBD_PATH, TestDataHolder.TABLE_DEF)) {
       reader.open();
       List<AbstractPage> pages = reader.readAllPages();
       for (AbstractPage page : pages) {

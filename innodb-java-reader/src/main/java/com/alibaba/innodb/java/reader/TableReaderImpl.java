@@ -111,7 +111,8 @@ public class TableReaderImpl implements TableReader {
     checkNotNull(storageService, "storageService should not null, please make sure TableReader is opened");
     List<AbstractPage> result = new ArrayList<>((int) storageService.numOfPages());
     for (int i = 0; i < storageService.numOfPages(); i++) {
-      result.add(readPage(i));
+      AbstractPage p = readPage(i);
+      result.add(p);
     }
     return result;
   }
